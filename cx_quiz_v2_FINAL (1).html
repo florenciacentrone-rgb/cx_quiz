@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CX Weekly Quiz — CookUnity</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100vh; background: #f5f3f0; font-family: 'Raleway', sans-serif; }
+.wrap { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+.brand-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; padding-bottom: 1rem; border-bottom: 2px solid #FFB81C; }
+.brand-logo { font-family: 'DM Serif Display', serif; font-size: 22px; color: #2C2B2B; letter-spacing: -0.5px; }
+.brand-logo span { color: #FFB81C; }
+.brand-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #AA0061; text-transform: uppercase; }
+.prog-wrap { margin-bottom: 1.75rem; }
+.prog-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #2C2B2B; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.prog-bg { background: #e0ddd9; border-radius: 99px; height: 5px; }
+.prog-fill { background: #FFB81C; height: 5px; border-radius: 99px; transition: width 0.4s ease; }
+.start-card { background: #2C2B2B; border-radius: 14px; padding: 2.5rem 2rem; text-align: center; }
+.start-card h1 { font-family: 'DM Serif Display', serif; font-size: 30px; color: #FFB81C; margin-bottom: 10px; }
+.start-card .sub { font-size: 15px; color: #e0ddd9; margin-bottom: 2rem; line-height: 1.7; }
+.start-card .sub strong { color: #FFB81C; }
+.input-group { margin-bottom: 1.25rem; text-align: left; }
+.input-group label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #e0ddd9; margin-bottom: 8px; }
+.input-group input { width: 100%; padding: 13px 16px; font-family: 'Raleway', sans-serif; font-size: 15px; border: 1.5px solid #555; border-radius: 8px; background: #3a3939; color: #fff; }
+.input-group input::placeholder { color: #888; }
+.input-group input:focus { outline: none; border-color: #FFB81C; }
+.err-msg { font-size: 12px; color: #F96F15; margin-top: 6px; display: none; }
+.cta-btn { display: block; width: 100%; padding: 15px; background: #FFB81C; border: none; border-radius: 8px; font-family: 'Raleway', sans-serif; font-size: 15px; font-weight: 700; color: #2C2B2B; cursor: pointer; transition: opacity 0.15s; }
+.cta-btn:hover { opacity: 0.88; }
+.q-meta-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.q-counter { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #AA0061; }
+.player-chip { font-size: 12px; font-weight: 600; color: #2C2B2B; background: #fff; padding: 4px 12px; border-radius: 99px; border: 1px solid #e0ddd9; }
+.timer-block { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; }
+.timer-circle { position: relative; width: 46px; height: 46px; flex-shrink: 0; }
+.timer-circle svg { transform: rotate(-90deg); }
+.timer-num { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 13px; font-weight: 700; color: #2C2B2B; }
+.timer-num.urgent { color: #AA0061; }
+.timer-bar-wrap { flex: 1; }
+.timer-bar-bg { background: #e0ddd9; border-radius: 99px; height: 5px; }
+.timer-bar-fill { background: #FFB81C; height: 5px; border-radius: 99px; transition: width 1s linear; }
+.timer-bar-fill.urgent { background: #AA0061; }
+.q-card { background: #fff; border: 1.5px solid #2C2B2B; border-radius: 12px; padding: 1.75rem; margin-bottom: 1rem; }
+.q-text { font-family: 'DM Serif Display', serif; font-size: 19px; color: #2C2B2B; line-height: 1.45; margin-bottom: 1.5rem; }
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt-btn { background: #fff; border: 1.5px solid #ddd; border-radius: 8px; padding: 13px 16px; text-align: left; font-family: 'Raleway', sans-serif; font-size: 14px; color: #2C2B2B; cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.4; display: flex; gap: 10px; align-items: flex-start; }
+.opt-btn .ltr { font-weight: 700; color: #AA0061; min-width: 18px; flex-shrink: 0; }
+.opt-btn:hover:not(:disabled) { border-color: #FFB81C; background: #fffbf0; }
+.opt-btn.correct { background: #e8f5ee; border-color: #218848; color: #218848; }
+.opt-btn.correct .ltr { color: #218848; }
+.opt-btn.wrong { background: #fdeef5; border-color: #AA0061; color: #AA0061; }
+.opt-btn.wrong .ltr { color: #AA0061; }
+.opt-btn:disabled { cursor: default; }
+.feedback { font-size: 13px; margin-top: 12px; padding: 12px 16px; border-radius: 8px; line-height: 1.6; }
+.feedback.ok { background: #e8f5ee; color: #218848; border-left: 3px solid #218848; }
+.feedback.nok { background: #fdeef5; color: #AA0061; border-left: 3px solid #AA0061; }
+.feedback strong { font-weight: 700; }
+.next-btn { display: block; width: 100%; padding: 14px; background: #2C2B2B; border: none; border-radius: 8px; font-family: 'Raleway', sans-serif; font-size: 14px; font-weight: 700; color: #FFB81C; cursor: pointer; letter-spacing: 0.04em; text-transform: uppercase; transition: opacity 0.15s; margin-top: 1rem; }
+.next-btn:hover { opacity: 0.85; }
+.score-card { background: #2C2B2B; border-radius: 14px; padding: 2.5rem 2rem; text-align: center; }
+.score-name { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #FFB81C; margin-bottom: 8px; }
+.score-num { font-family: 'DM Serif Display', serif; font-size: 72px; color: #FFB81C; line-height: 1; }
+.score-total { font-size: 24px; color: #e0ddd9; }
+.score-pct { font-size: 14px; color: #e0ddd9; margin-top: 4px; margin-bottom: 1.25rem; }
+.score-msg { font-size: 15px; color: #e0ddd9; line-height: 1.7; margin-bottom: 1.5rem; max-width: 420px; margin-left: auto; margin-right: auto; }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 1.75rem; }
+.badge { font-size: 11px; font-weight: 700; padding: 5px 11px; border-radius: 99px; }
+.badge.ok { background: #218848; color: #fff; }
+.badge.nok { background: #AA0061; color: #fff; }
+.restart-btn { display: inline-block; padding: 13px 36px; background: #FFB81C; border: none; border-radius: 8px; font-family: 'Raleway', sans-serif; font-size: 14px; font-weight: 700; color: #2C2B2B; cursor: pointer; }
+.saving { font-size: 12px; color: #e0ddd9; margin-top: 12px; opacity: 0.7; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand-header">
+    <div class="brand-logo">COOK<span>X</span>UNITY</div>
+    <div class="brand-tag">CX Weekly Quiz</div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-label"><span id="prog-text">Start</span><span id="prog-pct">0%</span></div>
+    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  </div>
+  <div id="quiz-body"></div>
+</div>
+<script>
+const SHEET_URL = 'https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbxrAe47juRtrehiX68KiVJklpRABsXwoSd_XShAhZe1inlZm_ibc0WG_qLM6Msu8cT-Og/exec/exec';
+const QS = [
+  { q: "You have 4 open tickets: Mail 78m, API 71m, Mail 76m, Closed ticket -19h. Which one do you work FIRST?", opts: ["Mail 78m — highest SLA used", "API 71m — closest to breach, under 2h", "Closed ticket -19h — already breached", "Mail 76m — second highest SLA"], ans: 1, exp: "The ticket closest to breach (under 2h) goes first. The API ticket at 71m is the one closest to hitting its SLA breach window." },
+  { q: "A ticket was already breached 19 hours ago. Where does it sit in your priority order?", opts: ["First — it's the most urgent", "Second — after tickets about to breach", "Third — after tickets with 2h+ remaining", "It can be skipped since it's already late"], ans: 1, exp: "Correct order: (1) closest to breach under 2h, (2) already breached, (3) more than 2h remaining. Already breached = second priority." },
+  { q: "Which cases should be automatically routed to the RET Squad?", opts: ["Any case where the customer mentions cancellation", "Only 25K or 52w+ customers, or explicit cancellation at first contact", "Delivery cases that escalate to cancellation", "All cancellation requests regardless of origin"], ans: 1, exp: "Only automatically identified high-value customers (25K, 52w+) or explicit subscription cancellation requests at first contact go to RET via automatic derivation." },
+  { q: "A customer contacts you about a broken seal, then later asks to cancel. What do you do?", opts: ["Derive it to RET immediately", "Keep the case and handle it yourself following the standard process", "Ask a supervisor to manually route it to RET", "Close and reopen as a new cancellation case"], ans: 1, exp: "No manual derivation is allowed. If a case started for another reason (e.g., broken seal), it stays with the original agent — even if the customer later asks to cancel." },
+  { q: "Customers are saying they didn't receive SMS delivery notifications. What's the correct guidance?", opts: ["Tell them SMS notifications are not available in their area", "Ask them to check their SPAM folder and mark the message as Not Spam", "Submit a Wabi escalation for missing notifications", "Resend the notification from the back-end system"], ans: 1, exp: "The messages were sent but moved to SPAM. Guide customers to find the text in their SPAM folder and mark it as Not Spam." },
+  { q: "A customer's order was left at the wrong unit inside the same building. What contact reason applies?", opts: ["Delivered to Wrong Address", "Instructions Not Followed", "Unforeseen Delivery Event", "Incomplete Dropoff"], ans: 1, exp: "'Delivered to Wrong Address' is for a completely different physical location. Wrong unit in the same building = the driver didn't follow delivery instructions." },
+  { q: "Which category carries the highest point deduction in the QA Rubric 2.0?", opts: ["Validation", "Basic Assistance", "Issue Resolution", "Processes & Escalations"], ans: 2, exp: "Issue Resolution carries the highest single deduction at -30 points. Did you fully and correctly resolve the customer's core issue in a single interaction?" },
+  { q: "A customer asks to skip an order. You reply: 'You can skip from your account under the orders section.' Is this correct?", opts: ["Yes — you gave clear instructions", "No — you must take the action yourself if it's within your scope", "Yes — it's faster and still resolves the issue", "No — skip requests must always be escalated"], ans: 1, exp: "Action is not the same as explanation. If the action is within your scope, do it for the customer. 'I've gone ahead and skipped your order' is the correct approach." },
+  { q: "When validating an SMS issue in Twilio, how do you search for the customer?", opts: ["By customer email", "By order number", "By phone number only, excluding the +1", "By customer name"], ans: 2, exp: "Twilio SMS Validation requires searching by phone number only. Access via supervisor credentials in 1Password, and exclude the +1 prefix when searching." },
+  { q: "Before offering a cancellation, which of these is NOT listed as an alternative to explore first?", opts: ["A discount", "A re-route (when eligible)", "A reschedule (based on Ring & Market guidelines)", "A full refund"], ans: 3, exp: "The newsletter lists discount, re-route, and reschedule as alternatives before cancellation. A full refund is not listed — cancellation should always be the last resort." }
+];
+
+const TOTAL = 30;
+let cur = 0, score = 0, answered = false, tInt = null, tLeft = TOTAL, name = '', res = [];
+
+function showStart() {
+  setProg(0, 'Start');
+  document.getElementById('quiz-body').innerHTML = `
+    <div class="start-card">
+      <h1>Weekly News Quiz</h1>
+      <p class="sub">10 questions about this week's updates.<br>You have <strong>30 seconds</strong> per question. Good luck!</p>
+      <div class="input-group">
+        <label>Your full name</label>
+        <input type="text" id="ni" placeholder="e.g. Maria Gonzalez" maxlength="40" onkeydown="if(event.key==='Enter')go()"/>
+        <div class="err-msg" id="nerr">Please enter your name before continuing.</div>
+      </div>
+      <button class="cta-btn" onclick="go()">Start quiz →</button>
+    </div>`;
+}
+
+function go() {
+  const v = document.getElementById('ni').value.trim();
+  if (!v) { document.getElementById('nerr').style.display = 'block'; return; }
+  name = v; cur = 0; score = 0; res = [];
+  render();
+}
+
+function setProg(n, label) {
+  const pct = Math.round(n / QS.length * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('prog-text').textContent = label;
+  document.getElementById('prog-pct').textContent = pct + '%';
+}
+
+function render() {
+  if (cur >= QS.length) { showScore(); return; }
+  const q = QS[cur];
+  setProg(cur, 'Question ' + (cur+1) + ' of ' + QS.length);
+  answered = false; tLeft = TOTAL;
+  document.getElementById('quiz-body').innerHTML = `
+    <div class="q-meta-row">
+      <div class="q-counter">Q${cur+1} / ${QS.length}</div>
+      <div class="player-chip">${name}</div>
+    </div>
+    <div class="timer-block">
+      <div class="timer-circle">
+        <svg width="46" height="46" viewBox="0 0 46 46">
+          <circle cx="23" cy="23" r="19" fill="none" stroke="#e0ddd9" stroke-width="3.5"/>
+          <circle id="arc" cx="23" cy="23" r="19" fill="none" stroke="#FFB81C" stroke-width="3.5"
+            stroke-dasharray="${(2*Math.PI*19).toFixed(2)}" stroke-dashoffset="0" stroke-linecap="round"/>
+        </svg>
+        <div class="timer-num" id="tnum">30</div>
+      </div>
+      <div class="timer-bar-wrap">
+        <div class="timer-bar-bg"><div class="timer-bar-fill" id="tbar" style="width:100%"></div></div>
+      </div>
+    </div>
+    <div class="q-card">
+      <div class="q-text">${q.q}</div>
+      <div class="opts" id="opts">
+        ${q.opts.map((o,i)=>`<button class="opt-btn" onclick="pick(${i})"><span class="ltr">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`).join('')}
+      </div>
+      <div id="fb"></div>
+    </div>
+    <button class="next-btn" id="nxt" style="display:none" onclick="nxt()">${cur===QS.length-1?'See my results →':'Next question →'}</button>`;
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(tInt);
+  const circ = 2 * Math.PI * 19;
+  tInt = setInterval(() => {
+    tLeft--;
+    const tn = document.getElementById('tnum');
+    const arc = document.getElementById('arc');
+    const tb = document.getElementById('tbar');
+    if (!tn) { clearInterval(tInt); return; }
+    tn.textContent = tLeft;
+    if (arc) arc.style.strokeDashoffset = circ * (1 - tLeft / TOTAL);
+    if (tb) tb.style.width = Math.round(tLeft / TOTAL * 100) + '%';
+    if (tLeft <= 8) {
+      tn.classList.add('urgent');
+      if (arc) arc.style.stroke = '#AA0061';
+      if (tb) tb.classList.add('urgent');
+    }
+    if (tLeft <= 0) { clearInterval(tInt); if (!answered) fail(); }
+  }, 1000);
+}
+
+function fail() {
+  answered = true; res.push(false);
+  document.querySelectorAll('.opt-btn').forEach((b,i) => { b.disabled=true; if(i===QS[cur].ans) b.classList.add('correct'); });
+  document.getElementById('fb').innerHTML = `<div class="feedback nok"><strong>Time's up!</strong> The correct answer was option ${String.fromCharCode(65+QS[cur].ans)}. ${QS[cur].exp}</div>`;
+  document.getElementById('nxt').style.display = 'block';
+}
+
+function pick(i) {
+  if (answered) return;
+  answered = true; clearInterval(tInt);
+  const ok = i === QS[cur].ans;
+  if (ok) score++;
+  res.push(ok);
+  document.querySelectorAll('.opt-btn').forEach((b,j) => { b.disabled=true; if(j===QS[cur].ans) b.classList.add('correct'); else if(j===i&&!ok) b.classList.add('wrong'); });
+  document.getElementById('fb').innerHTML = `<div class="feedback ${ok?'ok':'nok'}"><strong>${ok?'Correct!':'Incorrect.'}</strong> ${QS[cur].exp}</div>`;
+  document.getElementById('nxt').style.display = 'block';
+}
+
+function nxt() { cur++; render(); }
+
+function saveResult() {
+  const params = new URLSearchParams({
+    name: name,
+    score: score,
+    total: QS.length,
+    pct: Math.round(score / QS.length * 100),
+    results: res.map(r => (r ? 'Y' : 'N')).join(''),
+    time: new Date().toLocaleTimeString()
+  });
+  fetch(SHEET_URL + '?' + params.toString(), {
+    method: 'GET',
+    mode: 'no-cors'
+  }).catch(() => {});
+}
+
+function showScore() {
+  clearInterval(tInt);
+  setProg(QS.length, 'Completed');
+  saveResult();
+  const pct = Math.round(score / QS.length * 100);
+  const msg = pct >= 80 ? 'Excellent! You were very on top of this week\'s updates.' : pct >= 60 ? 'Good effort, but there are some topics worth reviewing.' : 'Looks like there\'s some catching up to do — give the week\'s news another read!';
+  document.getElementById('quiz-body').innerHTML = `
+    <div class="score-card">
+      <div class="score-name">${name}</div>
+      <div class="score-num">${score}<span class="score-total"> / ${QS.length}</span></div>
+      <div class="score-pct">${pct}% correct</div>
+      <div class="score-msg">${msg}</div>
+      <div class="badges">${res.map((r,i)=>`<span class="badge ${r?'ok':'nok'}">Q${i+1}</span>`).join('')}</div>
+      <button class="restart-btn" onclick="showStart()">Try again</button>
+    </div>`;
+}
+
+showStart();
+</script>
+</body>
+</html>

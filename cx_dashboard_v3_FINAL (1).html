@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CX Quiz Dashboard — CookUnity</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100vh; background: #f5f3f0; font-family: 'Raleway', sans-serif; }
+.wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+.brand-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; padding-bottom: 1rem; border-bottom: 2px solid #FFB81C; }
+.brand-logo { font-family: 'DM Serif Display', serif; font-size: 22px; color: #2C2B2B; }
+.brand-logo span { color: #FFB81C; }
+.brand-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #AA0061; text-transform: uppercase; }
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 2rem; }
+.stat { background: #2C2B2B; border-radius: 10px; padding: 1.25rem; text-align: center; }
+.stat-num { font-family: 'DM Serif Display', serif; font-size: 40px; color: #FFB81C; line-height: 1; }
+.stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #e0ddd9; margin-top: 6px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.section-header h2 { font-family: 'DM Serif Display', serif; font-size: 22px; color: #2C2B2B; }
+.refresh-btn { padding: 8px 20px; background: #FFB81C; border: none; border-radius: 8px; font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 700; color: #2C2B2B; cursor: pointer; }
+.refresh-btn:hover { opacity: 0.85; }
+.live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #218848; margin-right: 8px; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+.table-wrap { background: #fff; border: 1.5px solid #2C2B2B; border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
+table { width: 100%; border-collapse: collapse; }
+thead { background: #2C2B2B; }
+thead th { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #FFB81C; padding: 12px 16px; text-align: left; }
+tbody tr { border-bottom: 1px solid #f0eeec; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #fffbf0; }
+tbody td { padding: 12px 16px; font-size: 14px; color: #2C2B2B; vertical-align: middle; }
+.rank { font-weight: 700; color: #AA0061; }
+.score-pill { display: inline-block; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 700; }
+.high { background: #218848; color: #fff; }
+.mid { background: #FFB81C; color: #2C2B2B; }
+.low { background: #AA0061; color: #fff; }
+.q-dots { display: flex; gap: 3px; flex-wrap: wrap; }
+.dot { width: 20px; height: 20px; border-radius: 50%; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+.dot.ok { background: #218848; }
+.dot.nok { background: #AA0061; }
+.time-tag { font-size: 12px; color: #999; }
+.empty-state { text-align: center; padding: 3rem; color: #999; font-size: 14px; }
+.breakdown-wrap { background: #fff; border: 1.5px solid #2C2B2B; border-radius: 12px; overflow: hidden; margin-bottom: 2rem; }
+.q-row { display: flex; align-items: center; padding: 10px 16px; border-bottom: 1px solid #f0eeec; gap: 12px; }
+.q-row:last-child { border-bottom: none; }
+.q-num { font-size: 11px; font-weight: 700; color: #AA0061; min-width: 28px; }
+.q-info { flex: 1; }
+.q-topic { font-size: 11px; color: #999; margin-bottom: 4px; }
+.q-bar-bg { background: #f0eeec; border-radius: 99px; height: 8px; }
+.q-bar-fill { height: 8px; border-radius: 99px; transition: width 0.5s; }
+.q-pct { font-size: 13px; font-weight: 700; min-width: 40px; text-align: right; }
+.status-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 1.5rem; font-size: 13px; color: #666; }
+.status-bar span { font-weight: 600; color: #2C2B2B; }
+.error-box { background: #fdeef5; border: 1px solid #AA0061; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 13px; color: #AA0061; display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand-header">
+    <div class="brand-logo">COOK<span>X</span>UNITY</div>
+    <div class="brand-tag">Live Results Dashboard</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num" id="s-count">0</div><div class="stat-label">Completed</div></div>
+    <div class="stat"><div class="stat-num" id="s-avg">—</div><div class="stat-label">Avg Score</div></div>
+    <div class="stat"><div class="stat-num" id="s-top">—</div><div class="stat-label">Top Score</div></div>
+  </div>
+
+  <div class="error-box" id="err-box">Could not load data. Make sure your Google Sheet is published (File → Share → Publish to web).</div>
+
+  <div class="section-header">
+    <h2><span class="live-dot"></span>Live Results</h2>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="status-bar" id="last-update">Last update: —</div>
+      <button class="refresh-btn" onclick="loadData()">Refresh now</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>#</th><th>Name</th><th>Score</th><th>Q1–Q10</th><th>Time</th>
+      </tr></thead>
+      <tbody id="tbody"><tr><td colspan="5" class="empty-state">Waiting for results...</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="section-header" style="margin-top:2rem;">
+    <h2>Question breakdown</h2>
+  </div>
+  <div class="breakdown-wrap" id="breakdown">
+    <div class="empty-state">Results will appear here once people start submitting.</div>
+  </div>
+</div>
+
+<script>
+const SHEET_ID = '1r8iPf0B-h4CkPy6pmkQSnbfp-QvGUiwJN-efwK6yXmA';
+const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+
+const Q_LABELS = [
+  'Ticket priority order',
+  'Breached ticket priority',
+  'RET Squad routing',
+  'Broken seal + cancel request',
+  'SMS notifications / SPAM',
+  'Wrong unit same building',
+  'QA Rubric top category',
+  'Skip order: action vs explanation',
+  'Twilio search method',
+  'Cancellation alternatives'
+];
+
+function pillClass(pct) {
+  if (pct >= 80) return 'high';
+  if (pct >= 60) return 'mid';
+  return 'low';
+}
+
+function barColor(pct) {
+  if (pct >= 80) return '#218848';
+  if (pct >= 60) return '#FFB81C';
+  return '#AA0061';
+}
+
+async function loadData() {
+  try {
+    const res = await fetch(CSV_URL + '&t=' + Date.now());
+    if (!res.ok) throw new Error('fetch failed');
+    const text = await res.text();
+    const rows = text.trim().split('\n').map(r =>
+      r.split(',').map(c => c.replace(/^"|"$/g, '').trim())
+    );
+
+    document.getElementById('err-box').style.display = 'none';
+
+    const data = rows
+      .filter(r => r.length >= 6 && r[1] && r[1] !== 'Name')
+      .map(r => ({
+        time: r[0],
+        name: r[1],
+        score: parseInt(r[2]) || 0,
+        total: parseInt(r[3]) || 10,
+        pct: parseInt(r[4]) || 0,
+        results: r[5] || ''
+      }));
+
+    if (data.length === 0) {
+      document.getElementById('tbody').innerHTML = '<tr><td colspan="5" class="empty-state">No results yet — waiting for the team...</td></tr>';
+      document.getElementById('breakdown').innerHTML = '<div class="empty-state">Results will appear here once people start submitting.</div>';
+      return;
+    }
+
+    document.getElementById('s-count').textContent = data.length;
+    const avg = Math.round(data.reduce((a, d) => a + d.pct, 0) / data.length);
+    const top = Math.max(...data.map(d => d.score));
+    document.getElementById('s-avg').textContent = avg + '%';
+    document.getElementById('s-top').textContent = top + '/10';
+    document.getElementById('last-update').innerHTML = 'Last update: <span>' + new Date().toLocaleTimeString() + '</span>';
+
+    const sorted = [...data].sort((a, b) => b.score - a.score);
+    document.getElementById('tbody').innerHTML = sorted.map((d, i) => {
+      const dots = d.results.split(' ').filter(Boolean).map((r, qi) =>
+        `<div class="dot ${r === "Y" ? 'ok' : 'nok'}">${qi + 1}</div>`
+      ).join('');
+      return `<tr>
+        <td class="rank">${i + 1}</td>
+        <td style="font-weight:600">${d.name}</td>
+        <td><span class="score-pill ${pillClass(d.pct)}">${d.score}/${d.total} &nbsp;${d.pct}%</span></td>
+        <td><div class="q-dots">${dots}</div></td>
+        <td class="time-tag">${d.time}</td>
+      </tr>`;
+    }).join('');
+
+    const qCorrect = Array(10).fill(0);
+    data.forEach(d => {
+      d.results.split(' ').filter(Boolean).forEach((r, i) => {
+        if (r === "Y") qCorrect[i]++;
+      });
+    });
+
+    document.getElementById('breakdown').innerHTML = qCorrect.map((c, i) => {
+      const pct = data.length > 0 ? Math.round(c / data.length * 100) : 0;
+      return `<div class="q-row">
+        <div class="q-num">Q${i + 1}</div>
+        <div class="q-info">
+          <div class="q-topic">${Q_LABELS[i]}</div>
+          <div class="q-bar-bg"><div class="q-bar-fill" style="width:${pct}%;background:${barColor(pct)}"></div></div>
+        </div>
+        <div class="q-pct" style="color:${barColor(pct)}">${pct}%</div>
+      </div>`;
+    }).join('');
+
+  } catch (e) {
+    document.getElementById('err-box').style.display = 'block';
+    console.error(e);
+  }
+}
+
+loadData();
+setInterval(loadData, 10000);
+</script>
+</body>
+</html>
